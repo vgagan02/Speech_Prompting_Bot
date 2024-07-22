@@ -1,25 +1,41 @@
 from flask import Flask, request, jsonify
-import openai
+from flask_cors import CORS
+import google.generativeai as genai
 
 app = Flask(__name__)
+CORS(app)
 
-openai.api_key = 'sk-proj-p4v0aaNevIigqbcRIGRWT3BlbkFJpUgsc9QOqT1NQRsHvlZ7'
+genai.configure(api_key="AIzaSyAmPpGYto4N9vJrSpMJklZN_tNI0UJmTzo")  
+
+generation_config = {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 64,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
+
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=generation_config,
+)
 
 @app.route('/ask', methods=['POST'])
-def ask_openai():
-    data = request.json
+def ask_gemini():
+    data = request.get_json()
     prompt = data.get('prompt', '')
 
+    if not prompt:
+        return jsonify({'error': 'Prompt is required'}), 400
+
     try:
-        response = openai.Completion.create(
-            model='text-davinci-003',
-            prompt=prompt,
-            max_tokens=150
-        )
-        answer = response.choices[0].text.strip()
+        chat_session = model.start_chat(history=[])
+        response = chat_session.send_message(prompt)
+        answer = response.text.strip()
         return jsonify({'answer': answer})
     except Exception as e:
+        app.logger.error(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

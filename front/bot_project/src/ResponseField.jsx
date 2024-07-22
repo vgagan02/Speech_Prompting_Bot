@@ -2,12 +2,14 @@ import React from 'react';
 
 const ResponseField = ({ response }) => {
   return (
-    <div style={{ marginTop: '20px' }}>
-      <h2>OpenAI Response</h2>
+    <div>
+      <h2>Response:</h2>
       <textarea
         value={response}
         readOnly
-        style={{ width: '100%', height: '150px' }}
+        rows={5}
+        cols={50}
+        placeholder="The response from the model will appear here..."
       />
     </div>
   );

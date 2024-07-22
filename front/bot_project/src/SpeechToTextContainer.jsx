@@ -1,13 +1,8 @@
 import React, { useState, useRef } from 'react';
 import InputField from './InputField';
 import ListenButton from './ListenButton';
+import SubmitButton from './SubmitButton';
 import ResponseField from './ResponseField';
-import { Configuration, OpenAI } from 'openai';
-
-// Create a configuration for the OpenAI client with API key directly provided
-const openai = new OpenAI({
-  apiKey: 'your_openai_api_key',  // Replace this with your actual API key
-});
 
 const SpeechToTextContainer = ({ apiKey1 }) => {
   const [transcript, setTranscript] = useState('');
@@ -63,26 +58,29 @@ const SpeechToTextContainer = ({ apiKey1 }) => {
       setListening(false);
       if (mediaRecorderRef.current) mediaRecorderRef.current.stop();
       if (socketRef.current) socketRef.current.close();
-
-      // Send the transcript to OpenAI once listening is stopped
-      submitQuestion(transcript);
     }
   };
 
-  const submitQuestion = async (question) => {
-    if (!question.trim()) return;
+  const handleSubmit = async () => {
+    if (!transcript.trim()) return;
 
     try {
-      const response = await openai.Completions.create({
-        model: 'text-davinci-003',
-        prompt: question,
-        max_tokens: 150,
+      const response = await fetch('http://localhost:5000/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: transcript }),
       });
 
-      const answer = response.choices[0].text.trim();
-      setResponse(answer);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setResponse(data.answer);
     } catch (error) {
-      console.error('Error fetching OpenAI response:', error);
+      console.error('Error fetching Gemini response:', error);
     }
   };
 
@@ -91,6 +89,7 @@ const SpeechToTextContainer = ({ apiKey1 }) => {
       <h1>Speech to Text</h1>
       <InputField transcript={transcript} />
       <ListenButton listening={listening} onClick={startListening} />
+      <SubmitButton onClick={handleSubmit} />
       <ResponseField response={response} />
     </div>
   );

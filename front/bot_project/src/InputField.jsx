@@ -2,12 +2,15 @@ import React from 'react';
 
 const InputField = ({ transcript }) => {
   return (
-    <input
-      type="text"
-      value={transcript}
-      readOnly
-      style={{ width: '80%', marginRight: '10px' }}
-    />
+    <div>
+      <textarea
+        value={transcript}
+        readOnly
+        rows={5}
+        cols={50}
+        placeholder="Your transcribed text will appear here..."
+      />
+    </div>
   );
 };
 
