@@ -1,4 +1,5 @@
 import React from 'react';
+import ConvertToAudioButton from './ConvertToAudioButton';
 
 const ResponseField = ({ response }) => {
   return (
@@ -11,6 +12,7 @@ const ResponseField = ({ response }) => {
         cols={50}
         placeholder="The response from the model will appear here..."
       />
+      <ConvertToAudioButton response={response} />
     </div>
   );
 };
