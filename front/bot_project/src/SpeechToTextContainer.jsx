@@ -87,7 +87,7 @@ const SpeechToTextContainer = ({ apiKey1 }) => {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Speech to Text</h1>
-      <InputField transcript={transcript} />
+      <InputField transcript={transcript} setTranscript={setTranscript} />
       <ListenButton listening={listening} onClick={startListening} />
       <SubmitButton onClick={handleSubmit} />
       <ResponseField response={response} />

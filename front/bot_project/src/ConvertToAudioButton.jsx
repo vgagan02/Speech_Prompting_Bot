@@ -1,16 +1,30 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 const ConvertToAudioButton = ({ response }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const speechRef = useRef(null);
+
   const handleConvertToAudio = () => {
     if (!response.trim()) return;
 
-    const speech = new SpeechSynthesisUtterance(response);
-    window.speechSynthesis.speak(speech);
+    if (speechRef.current && speechSynthesis.speaking) {
+      if (isPlaying) {
+        window.speechSynthesis.pause();
+      } else {
+        window.speechSynthesis.resume();
+      }
+      setIsPlaying(!isPlaying);
+    } else {
+      speechRef.current = new SpeechSynthesisUtterance(response);
+      speechRef.current.onend = () => setIsPlaying(false);
+      window.speechSynthesis.speak(speechRef.current);
+      setIsPlaying(true);
+    }
   };
 
   return (
     <button onClick={handleConvertToAudio}>
-      Convert To Audio
+      {isPlaying ? 'Pause' : 'Play'} Audio
     </button>
   );
 };

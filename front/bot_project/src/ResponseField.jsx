@@ -8,8 +8,8 @@ const ResponseField = ({ response }) => {
       <textarea
         value={response}
         readOnly
-        rows={5}
-        cols={50}
+        rows={8}
+        cols={100}
         placeholder="The response from the model will appear here..."
       />
       <ConvertToAudioButton response={response} />
